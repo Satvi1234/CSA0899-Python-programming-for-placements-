@@ -1,0 +1,99 @@
+1. Data Flow Diagram for Weather Monitoring System
+
+2. Python Application for Weather Monitoring
+import requests
+
+class WeatherMonitor:
+    def __init__(self, api_key):
+        self.api_key = api_key
+        self.base_url = 'https://api.openweathermap.org/data/2.5/weather'
+
+    def fetch_weather_data_by_city(self, city):
+        params = {
+            'q': city,
+            'appid': self.api_key,
+            'units': 'metric'  # Units in Celsius for temperature
+        }
+        try:
+            response = requests.get(self.base_url, params=params)
+            if response.status_code == 200:
+                data = response.json()
+                return data
+            else:
+                print(f"Error fetching data: {response.status_code}")
+                return None
+        except requests.exceptions.RequestException as e:
+            print(f"Request error: {e}")
+            return None
+
+    def fetch_weather_data_by_coords(self, lat, lon):
+        params = {
+            'lat': lat,
+            'lon': lon,
+            'appid': self.api_key,
+            'units': 'metric'
+        }
+        try:
+            response = requests.get(self.base_url, params=params)
+            if response.status_code == 200:
+                data = response.json()
+                return data
+            else:
+                print(f"Error fetching data: {response.status_code}")
+                return None
+        except requests.exceptions.RequestException as e:
+            print(f"Request error: {e}")
+            return None
+
+    def display_weather_info(self, data):
+        if data is None:
+            print("No data available.")
+            return
+        
+        print(f"Weather Information for {data['name']}, {data['sys']['country']}")
+        print(f" - Temperature: {data['main']['temp']} °C")
+        print(f" - Weather: {data['weather'][0]['description']}")
+        print(f" - Humidity: {data['main']['humidity']}%")
+        print(f" - Wind Speed: {data['wind']['speed']} m/s")
+
+# Example usage:
+if __name__ == "__main__":
+    api_key = 'your_api_key_here'  # Replace with your actual API key
+    weather_monitor = WeatherMonitor(api_key)
+    
+    # Example: Fetch weather data by city name
+    city = "London"  # Replace with actual city name
+    weather_data_city = weather_monitor.fetch_weather_data_by_city(city)
+    if weather_data_city:
+        weather_monitor.display_weather_info(weather_data_city)
+    
+    # Example: Fetch weather data by coordinates
+    lat = 51.51  # Example latitude (London)
+    lon = -0.13  # Example longitude (London)
+    weather_data_coords = weather_monitor.fetch_weather_data_by_coords(lat, lon)
+    if weather_data_coords:
+        weather_monitor.display_weather_info(weather_data_coords)
+3. Documentation of API Integration and Weather Data Display
+API Integration:
+OpenWeatherMap API is used to fetch real-time weather data.
+Endpoint /weather is used with parameters q (city name) or lat, lon (coordinates) to retrieve data.
+requests library is employed to send GET requests to the API endpoint.
+Error handling is implemented to manage potential network issues or API errors.
+Weather Data Display:
+The fetch_weather_data_by_city and fetch_weather_data_by_coords methods retrieve JSON data from the API based on city name or coordinates.
+The display_weather_info method processes and prints relevant weather information:
+Current temperature in Celsius.
+Weather description (e.g., clear sky, rain).
+Humidity percentage.
+Wind speed in meters per second.
+Error handling ensures appropriate messages are displayed when no data is available or errors occur during fetching.
+4. Assumptions and Potential Improvements
+Assumptions:
+Assumes the availability and correctness of real-time weather data from the OpenWeatherMap API.
+Assumes the provided city name or coordinates are valid and recognized by the API.
+Potential Improvements:
+User Interface: Develop a more interactive GUI for user input and data display.
+Error Handling: Enhance error handling to cover more edge cases and provide detailed error messages.
+Forecast Data: Incorporate forecasting capabilities to display future weather predictions.
+Map Integration: Integrate with maps to visually display weather conditions over a region.
+Unit Conversion: Allow users to choose units for temperature (e.g., Celsius, Fahrenheit) and wind speed (e.g., meters per second, miles per hour).
