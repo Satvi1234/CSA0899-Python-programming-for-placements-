@@ -1,0 +1,70 @@
+1. Data Flow Diagram for COVID-19 Statistics Tracking Application
+
+2. Python Application for COVID-19 Statistics Tracking
+import requests
+
+class CovidStatistics:
+    def __init__(self):
+        self.base_url = 'https://disease.sh/v3/covid-19'
+
+    def fetch_covid_data(self, region):
+        endpoint = f'{self.base_url}/countries/{region}'
+        try:
+            response = requests.get(endpoint)
+            if response.status_code == 200:
+                data = response.json()
+                return data
+            else:
+                print(f"Error fetching data: {response.status_code}")
+                return None
+        except requests.exceptions.RequestException as e:
+            print(f"Request error: {e}")
+            return None
+
+    def display_covid_statistics(self, data):
+        if data is None:
+            print("No data available.")
+            return
+        
+        print(f"COVID-19 Statistics for {data['country']} (Last Updated: {data['updated']})")
+        print(f" - Cases: {data['cases']}")
+        print(f" - Recovered: {data['recovered']}")
+        print(f" - Deaths: {data['deaths']}")
+        print(f" - Active Cases: {data['active']}")
+        print(f" - Critical Cases: {data['critical']}")
+        print(f" - Cases per Million: {data['casesPerOneMillion']}")
+        print(f" - Deaths per Million: {data['deathsPerOneMillion']}")
+        print(f" - Total Tests: {data['tests']}")
+        print(f" - Tests per Million: {data['testsPerOneMillion']}")
+
+# Example usage:
+if __name__ == "__main__":
+    covid_stats = CovidStatistics()
+
+    region = "USA"  # Replace with actual region (country)
+    
+    covid_data = covid_stats.fetch_covid_data(region)
+    if covid_data:
+        covid_stats.display_covid_statistics(covid_data)
+3. Documentation of API Integration and COVID-19 Data Display
+API Integration:
+disease.sh API is used to fetch real-time COVID-19 statistics.
+Endpoint /countries/{region} is used with the region (country) specified to retrieve data.
+requests library is employed to send GET requests to the API endpoint.
+Error handling is implemented to manage potential network issues or API errors.
+COVID-19 Data Display:
+The fetch_covid_data method retrieves JSON data from the API.
+The display_covid_statistics method processes and prints relevant information:
+Total cases, recoveries, deaths, active cases, critical cases, etc.
+Additional metrics such as cases per million, deaths per million, total tests, and tests per million.
+Error handling ensures appropriate messages are displayed when no data is available or errors occur during fetching.
+4. Assumptions and Potential Improvements
+Assumptions:
+Assumes the availability and correctness of real-time COVID-19 data from the disease.sh API.
+Assumes the provided region (country) input is valid and recognized by the API.
+Potential Improvements:
+User Interface: Develop a more interactive GUI for user input and data display.
+Error Handling: Enhance error handling to cover more edge cases and provide detailed error messages.
+Historical Data and Trends: Incorporate historical data and trend analysis to visualize changes over time.
+Regional Specifics: Allow for more granular region inputs (e.g., state, city) and provide localized statistics.
+Data Visualization: Implement charts and graphs to visualize COVID-19 statistics for better understanding.
