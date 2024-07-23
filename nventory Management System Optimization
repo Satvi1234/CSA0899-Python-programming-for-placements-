@@ -1,0 +1,107 @@
+class Product:
+    def __init__(self, product_id, name, category, price, supplier):
+        self.product_id = product_id
+        self.name = name
+        self.category = category
+        self.price = price
+        self.supplier = supplier
+
+class Warehouse:
+    def __init__(self, warehouse_id, name, address, capacity):
+        self.warehouse_id = warehouse_id
+        self.name = name
+        self.address = address
+        self.capacity = capacity
+        self.inventory = {}
+
+class InventoryManager:
+    def __init__(self):
+        self.warehouses = {}
+        self.reorder_threshold = 20  # Example threshold for reorder point
+
+    def add_warehouse(self, warehouse):
+        self.warehouses[warehouse.warehouse_id] = warehouse
+
+    def update_inventory(self, warehouse_id, product_id, quantity_change):
+        if warehouse_id in self.warehouses and product_id in self.warehouses[warehouse_id].inventory:
+            self.warehouses[warehouse_id].inventory[product_id] += quantity_change
+            if self.warehouses[warehouse_id].inventory[product_id] < self.reorder_threshold:
+                self.generate_reorder_alert(product_id, warehouse_id)
+        else:
+            print("Warehouse or product not found.")
+
+    def get_stock_level(self, warehouse_id, product_id):
+        if warehouse_id in self.warehouses and product_id in self.warehouses[warehouse_id].inventory:
+            return self.warehouses[warehouse_id].inventory[product_id]
+        else:
+            return None
+
+    def generate_reorder_alert(self, product_id, warehouse_id):
+        print(f"Alert: Product {product_id} in Warehouse {warehouse_id} is below reorder threshold.")
+
+    def calculate_reorder_point(self, historical_demand, lead_time):
+        average_demand_per_day = sum(historical_demand) / len(historical_demand)
+        reorder_point = average_demand_per_day * lead_time
+        return reorder_point
+
+class InventoryOptimizer:
+    def __init__(self):
+        self.optimizer = InventoryManager()
+
+    def optimize_reorder(self, product_id, warehouse_id, historical_demand, lead_time):
+        reorder_point = self.optimizer.calculate_reorder_point(historical_demand, lead_time)
+        current_stock = self.optimizer.get_stock_level(warehouse_id, product_id)
+        if current_stock is not None and current_stock < reorder_point:
+            reorder_quantity = int(reorder_point - current_stock)
+            print(f"Recommended reorder quantity for Product {product_id}: {reorder_quantity}")
+        else:
+            print(f"No need to reorder Product {product_id} at this time.")
+
+class ReportGenerator:
+    def generate_inventory_report(self, inventory_manager):
+        for warehouse_id, warehouse in inventory_manager.warehouses.items():
+            print(f"Warehouse ID: {warehouse_id}, Name: {warehouse.name}")
+            for product_id, quantity in warehouse.inventory.items():
+                print(f" - Product ID: {product_id}, Quantity: {quantity}")
+
+class InventorySystem:
+    def __init__(self):
+        self.inventory_manager = InventoryManager()
+        self.inventory_optimizer = InventoryOptimizer()
+        self.report_generator = ReportGenerator()
+
+    def run(self):
+        # Initialize warehouses and products (example initialization)
+        warehouse1 = Warehouse(1, 'Main Warehouse', '123 Main St', 1000)
+        self.inventory_manager.add_warehouse(warehouse1)
+
+        product1 = Product(1, 'Widget A', 'Electronics', 29.99, 'Supplier X')
+        warehouse1.inventory[product1.product_id] = 100  # Initial stock level
+
+        # Simulate inventory updates and optimizations
+        self.inventory_manager.update_inventory(1, 1, -10)  # Decrease stock of product 1 in warehouse 1 by 10
+
+        historical_demand = [10, 15, 12, 18, 20]  # Example historical demand data
+        lead_time = 7  # Example lead time in days
+
+        self.inventory_optimizer.optimize_reorder(product1.product_id, warehouse1.warehouse_id, historical_demand, lead_time)
+
+        # Generate inventory report
+        self.report_generator.generate_inventory_report(self.inventory_manager)
+
+
+# Example usage:
+if __name__ == "__main__":
+    inventory_system = InventorySystem()
+    inventory_system.run()
+Explanation:
+Product and Warehouse classes define the basic structure for products and warehouses, including attributes and inventory tracking.
+InventoryManager class manages the inventory system operations such as updating inventory levels, checking stock levels, and generating reorder alerts.
+InventoryOptimizer class utilizes the InventoryManager to calculate reorder points based on historical demand and lead time, providing recommendations for reorder quantities.
+ReportGenerator class generates reports on current inventory levels.
+InventorySystem class integrates all components together, initializing warehouses and products, simulating updates, optimizing inventory, and generating reports.
+Key Features:
+Inventory Tracking: Tracks real-time inventory levels and alerts when stock falls below a threshold.
+Optimization: Calculates optimal reorder points and quantities based on historical data and lead times.
+Reporting: Generates basic inventory reports.
+Simulation: Simulates inventory updates and optimizations for demonstration purposes.
